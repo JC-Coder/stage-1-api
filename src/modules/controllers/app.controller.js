@@ -3,6 +3,7 @@ import { catchAsync } from '../../common/utils/errorHandler.js'
 import geoip from 'geoip-lite'
 import requestIp from 'request-ip'
 import axios from 'axios'
+import { ENVIRONMENT } from '../../common/config/environment.js'
 
 const getUserIp = (req) => {
     const ipAddress = requestIp.getClientIp(req)
@@ -31,7 +32,7 @@ const getGeoLocation = async (ip) => {
 const getTemperatureInCelsius = async (city) => {
     try {
         const res = await axios.get(
-            `http://api.weatherapi.com/v1/current.json?key=f7a3b3c71b814c8d88e223708243006&q=${city}&aqi=no`
+            `http://api.weatherapi.com/v1/current.json?key=${ENVIRONMENT.OPEN_WEATHER.API_KEY}&q=${city}&aqi=no`
         )
 
         console.log('res axios', res)
