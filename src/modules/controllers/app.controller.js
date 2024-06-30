@@ -7,18 +7,11 @@ import { ENVIRONMENT } from '../../common/config/environment.js'
 
 const getUserIp = (req) => {
     const ipAddress = requestIp.getClientIp(req)
-    console.log('ipAddress', ipAddress)
     return ipAddress
 }
 
 const getGeoLocation = async (ip) => {
-    const geo = await geoip.lookup('104.28.220.44') // TODO : remove when deploying
-
-    console.log('geo', geo)
-
-    if (!geo) {
-        throw new AppError('Unable to get geolocation', 400)
-    }
+    const geo = await geoip.lookup(ip ?? '104.28.220.44')
 
     const { city, region, country } = geo
 
@@ -62,8 +55,11 @@ export const getHello = catchAsync(async (req, res) => {
 
     let requesterCity = city ?? 'New York'
 
-    if (!ip) {
-        throw new AppError('Unable to get user IP', 400)
+    if (!ip || !city) {
+        throw new AppError(
+            'Sorry we are having network issue , please try again',
+            400
+        )
     }
 
     const data = {
