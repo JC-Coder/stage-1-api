@@ -7,11 +7,13 @@ import { ENVIRONMENT } from '../../common/config/environment.js'
 
 const getUserIp = (req) => {
     const ipAddress = requestIp.getClientIp(req)
+    console.log('ipAddress', ipAddress)
     return ipAddress
 }
 
 const getGeoLocation = async (ip) => {
     const geo = await geoip.lookup(ip ?? '104.28.220.44')
+    console.log('geo', geo)
 
     const { city, region, country } = geo
 
@@ -52,6 +54,8 @@ export const getHello = catchAsync(async (req, res) => {
     const ip = getUserIp(req)
     const { city } = await getGeoLocation(ip)
     const temperature = await getTemperatureInCelsius(city)
+
+    console.log({ ip, city, temperature })
 
     let requesterCity = city ?? 'New York'
 
