@@ -3,19 +3,18 @@ import { catchAsync } from '../../common/utils/errorHandler.js'
 import geoip from 'geoip-lite'
 import axios from 'axios'
 import { ENVIRONMENT } from '../../common/config/environment.js'
+import requestIp from 'request-ip'
 
 const getUserIp = (req) => {
-    let ipAddress =
-        req.ip ||
-        req.headers['x-forwarded-for']?.split(',')[0] ||
-        req.socket.remoteAddress ||
-        '104.28.220.44'
+    let ipAddress = requestIp.getClientIp(req)
 
-    ipAddress = ipAddress.replace('::ffff:', '')
+    if (ipAddress.includes('::ffff:')) {
+        ipAddress = ipAddress.replace('::ffff:', '')
+    }
 
     console.log('ipAddress', ipAddress)
 
-    return ipAddress
+    return ipAddress ?? '104.28.220.44'
 }
 
 const getGeoLocation = async (ip) => {
