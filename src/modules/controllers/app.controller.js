@@ -5,11 +5,13 @@ import axios from 'axios'
 import { ENVIRONMENT } from '../../common/config/environment.js'
 
 const getUserIp = (req) => {
-    const ipAddress =
+    let ipAddress =
         req.ip ||
         req.headers['x-forwarded-for']?.split(',')[0] ||
         req.socket.remoteAddress ||
         '104.28.220.44'
+
+    ipAddress = ipAddress.replace('::ffff:', '')
 
     console.log('ipAddress', ipAddress)
 
