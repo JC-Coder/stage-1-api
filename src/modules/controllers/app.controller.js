@@ -1,18 +1,23 @@
 import AppError from '../../common/utils/appError.js'
 import { catchAsync } from '../../common/utils/errorHandler.js'
 import geoip from 'geoip-lite'
-import requestIp from 'request-ip'
 import axios from 'axios'
 import { ENVIRONMENT } from '../../common/config/environment.js'
 
 const getUserIp = (req) => {
-    const ipAddress = requestIp.getClientIp(req)
+    const ipAddress =
+        req.ip ||
+        req.headers['x-forwarded-for']?.split(',')[0] ||
+        req.socket.remoteAddress ||
+        '104.28.220.44'
+
     console.log('ipAddress', ipAddress)
+
     return ipAddress
 }
 
 const getGeoLocation = async (ip) => {
-    const geo = await geoip.lookup(ip ?? '104.28.220.44')
+    const geo = await geoip.lookup(ip)
     console.log('geo', geo)
 
     const { city, region, country } = geo
@@ -30,7 +35,7 @@ const getTemperatureInCelsius = async (city) => {
             `http://api.weatherapi.com/v1/current.json?key=${ENVIRONMENT.OPEN_WEATHER.API_KEY}&q=${city}&aqi=no`
         )
 
-        console.log('res axios', res)
+        console.log('res axios', res?.data)
 
         if (!res?.status === 200 || !res?.data?.current?.temp_c) {
             throw new AppError(
